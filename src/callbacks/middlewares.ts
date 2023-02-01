@@ -67,7 +67,7 @@ export namespace middlewares {
 
     try {
       const foundMovie: iMovie[] | undefined = await database.getMovieByName(
-        requestMovieData.name
+        requestMovieData.name + ""
       );
 
       if (foundMovie?.length !== 0) {

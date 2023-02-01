@@ -18,10 +18,10 @@ export namespace requests {
     }
   };
 
-  export const getAllMovies = async (request: Request, Response: Response) => {
+  export const getAllMovies = async (request: Request, response: Response) => {
     try {
       const allMovies = await database.getAllMovies();
-
+      
       return response.status(200).send(allMovies);
     } catch (error) {
       const errorMessage: iMessage = {

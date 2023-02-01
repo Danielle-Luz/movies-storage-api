@@ -19,4 +19,4 @@ api.listen(3000, async () => {
   await database.openConnection();
 
   console.log("API is running :))");
-});
+})

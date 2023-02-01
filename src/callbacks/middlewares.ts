@@ -44,7 +44,7 @@ export namespace middlewares {
     const { body: requestMovieData } = request;
 
     const hasSameTypes = movieKeys.every((key) => {
-      return requestMovieData[key].constructor === movie[key].constructor;
+      return requestMovieData[key]?.constructor === movie[key].constructor;
     });
 
     if (!hasSameTypes) {

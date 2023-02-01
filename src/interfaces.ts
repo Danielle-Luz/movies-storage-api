@@ -4,7 +4,7 @@ export interface iMovie {
   description: string;
   duration: number;
   price: number;
-	[key: string]: string | number;
+	[key: string]: number | string;
 }
 
 export interface iMessage {

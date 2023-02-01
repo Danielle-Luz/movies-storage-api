@@ -1,5 +1,6 @@
 import { middlewares } from "./callbacks/middlewares";
 import { requests } from "./callbacks/requests";
+import { database } from "./database";
 
 const express = require("express");
 const api = express();
@@ -14,4 +15,8 @@ api.post(
   requests.createMovie
 );
 
-api.listen(3000, () => console.log("API is running :))"));
+api.listen(3000, async () => {
+  await database.openConnection();
+
+  console.log("API is running :))");
+});

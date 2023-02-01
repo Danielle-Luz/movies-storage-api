@@ -1,6 +1,6 @@
 import { throws } from "assert";
 import { Client, QueryResult } from "pg";
-import format from "pg-format";
+import { format } from "node-pg-format";
 import { iMovie, tCreateMovie } from "./interfaces";
 
 export namespace database {
@@ -12,16 +12,10 @@ export namespace database {
     port: 5432,
   });
 
-  const openConnection = async () => {
+  export const openConnection = async () => {
     await connection.connect();
 
     console.log("Connection opened");
-  };
-
-  const closeConnection = async () => {
-    await connection.end();
-
-    console.log("Connection was closed");
   };
 
   export const getMovieByName = async (searchedName: string) => {
@@ -30,21 +24,13 @@ export namespace database {
       searchedName
     );
 
-    try {
-      await openConnection();
+    const resultQuery: QueryResult<iMovie> = await connection.query(
+      queryString
+    );
 
-      const resultQuery: QueryResult<iMovie> = await connection.query(
-        queryString
-      );
+    const movieFound: iMovie[] = resultQuery.rows;
 
-      const movieFound: iMovie[] = resultQuery.rows;
-
-      return movieFound;
-    } catch (error) {
-      throw error;
-    } finally {
-      await closeConnection();
-    }
+    return movieFound;
   };
 
   export const createMovie = async (newMovie: tCreateMovie) => {
@@ -56,14 +42,7 @@ export namespace database {
       movieKeys,
       movieData
     );
-
-    try {
-      await openConnection();
-      await connection.query(queryString);
-    } catch (error) {
-      throw error;
-    } finally {
-      await closeConnection();
-    }
+    
+    await connection.query(queryString);
   };
 }

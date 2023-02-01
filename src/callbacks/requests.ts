@@ -3,12 +3,23 @@ import { database } from "../database";
 import { iMessage } from "../interfaces";
 
 export namespace requests {
-  export const createMovie = (request: Request, response: Response) => {
-    const { body: newMovie } = request;
-    const sucessMessage: iMessage = { message: "Filme inserido com sucesso." };
+  export const createMovie = async (request: Request, response: Response) => {
+    let status: number;
+    let message: iMessage;
 
-    database.createMovie(newMovie);
+    try {
+      const { body: newMovie } = request;
 
-    response.status(201).send(sucessMessage);
+      status = 201;
+      message = {
+        message: "Filme inserido com sucesso.",
+      };
+
+      await database.createMovie(newMovie);
+    } catch (error) {
+      status = 500;
+      message = { message: "Erro ao processar a solicitação na base de dados" };
+    }
+    response.status(status).send(message);
   };
 }

@@ -6,4 +6,8 @@ export interface iMovie {
 	price: number;
 }
 
+export interface iMessage {
+	message: string;
+}
+
 export type tCreateMovie = Omit<iMovie, "id">;

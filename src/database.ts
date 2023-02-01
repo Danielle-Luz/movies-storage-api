@@ -20,7 +20,7 @@ export namespace database {
 
   export const getMovieByName = async (searchedName: string) => {
     const queryString = format(
-      "SELECT * FROM movies WHERE name = %L",
+      "SELECT * FROM movies WHERE LOWER(name) = LOWER(%L)",
       searchedName
     );
 

@@ -17,7 +17,7 @@ export namespace requests {
 
       const createdMovie = await database.createMovie(newMovie);
 
-      return response.status(200).send(createdMovie);
+      return response.status(201).send(createdMovie);
     } catch (error) {
       status = 500;
       message = { message: "Erro ao processar a solicitação na base de dados" };

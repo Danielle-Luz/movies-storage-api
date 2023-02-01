@@ -58,6 +58,6 @@ export namespace database {
 
     const allMovies: QueryResult<iMovie> = await connection.query(queryString);
 
-    return allMovies;
+    return allMovies.rows;
   }
 }

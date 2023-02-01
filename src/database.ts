@@ -38,11 +38,18 @@ export namespace database {
     const movieData = Object.values(newMovie);
 
     const queryString = format(
-      "INSERT INTO movies(%I) VALUES(%L)",
+      `
+      INSERT INTO movies(%I) VALUES(%L)
+      RETURNING *
+      `,
       movieKeys,
       movieData
     );
-    
-    await connection.query(queryString);
+  
+    const queryResult: QueryResult<iMovie> = await connection.query(
+      queryString
+    );
+
+    return queryResult.rows;
   };
 }

@@ -1,3 +1,4 @@
+import { database } from "./../database";
 import { iMessage, iMovie, tCreateMovie } from "./../interfaces";
 import { NextFunction, Request, Response } from "express";
 
@@ -15,9 +16,9 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const { body } = request;
+    const { body: requestMovieData } = request;
 
-    const requestMovieKeys = Object.keys(body);
+    const requestMovieKeys = Object.keys(requestMovieData);
 
     const hasAllMovieKeys = requestMovieKeys.every((key) => {
       return movieKeys.includes(key);
@@ -40,10 +41,10 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const { body } = request;
+    const { body: requestMovieData } = request;
 
     const hasSameTypes = movieKeys.every((key) => {
-      return body[key].constructor === movie[key].constructor;
+      return requestMovieData[key].constructor === movie[key].constructor;
     });
 
     if (!hasSameTypes) {
@@ -57,11 +58,25 @@ export namespace middlewares {
     return next();
   };
 
-  export const checkIfNameAlreadyExists = (
+  export const checkIfNameAlreadyExists = async (
     request: Request,
     response: Response,
     next: NextFunction
   ) => {
-    
+    const { body: requestMovieData } = request;
+
+    const foundMovie: iMovie[] | undefined = await database.getMovieByName(
+      requestMovieData.name
+    );
+
+    if (foundMovie?.length !== 0) {
+      const errorMessage: iMessage = {
+        message: "Não é possível cadastrar mais de um filme com o mesmo nome",
+      };
+
+      return response.status(409).send(errorMessage);
+    }
+
+    next();
   };
 }

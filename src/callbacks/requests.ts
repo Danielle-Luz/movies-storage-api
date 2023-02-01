@@ -16,4 +16,8 @@ export namespace requests {
       response.status(500).send(message);
     }
   };
+
+  export const getAllMovies = async (request: Request, Response: Response) => {
+    
+  }
 }

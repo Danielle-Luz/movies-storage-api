@@ -15,8 +15,10 @@ api.post(
   requests.createMovie
 );
 
+api.get("/movies", requests.getAllMovies);
+
 api.listen(3000, async () => {
   await database.openConnection();
 
   console.log("API is running :))");
-})
+});

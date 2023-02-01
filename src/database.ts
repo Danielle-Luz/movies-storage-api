@@ -52,4 +52,12 @@ export namespace database {
 
     return queryResult.rows[0];
   };
+
+  export const getAllMovies = async () => {
+    const queryString = "SELECT * FROM movies";
+
+    const allMovies: QueryResult<iMovie> = await connection.query(queryString);
+
+    return allMovies.rows;
+  }
 }

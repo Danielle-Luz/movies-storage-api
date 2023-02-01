@@ -1,4 +1,6 @@
-import { Client } from "pg";
+import { Client, QueryResult } from "pg";
+import format from "pg-format";
+import { iMovie } from "./interfaces";
 
 export namespace database {
   const connection = new Client({
@@ -9,15 +11,37 @@ export namespace database {
     port: 5432,
   });
 
-  export const openConnection = async () => {
+  const openConnection = async () => {
     await connection.connect();
 
     console.log("Connection opened");
   };
 
-  export const closeConnection = async () => {
+  const closeConnection = async () => {
     await connection.end();
 
     console.log("Connection was closed");
+  };
+
+  export const getMovieByName = async (searchedName: string) => {
+    const queryString = format(
+      "SELECT * FROM movies WHERE name = %L",
+      searchedName
+    );
+
+    try {
+      await openConnection();
+
+      const resultQuery: QueryResult<iMovie> = await connection.query(
+        queryString
+      );
+      const movieFound: iMovie[] = resultQuery.rows;
+
+      await closeConnection();
+
+      return movieFound;
+    } catch (error) {
+      console.error(error);
+    }
   };
 }

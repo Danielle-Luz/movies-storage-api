@@ -5,3 +5,5 @@ export interface iMovie {
 	duration: number;
 	price: number;
 }
+
+export type iCreateMovie = Omit<iMovie, "id">;

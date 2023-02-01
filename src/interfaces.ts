@@ -6,4 +6,4 @@ export interface iMovie {
 	price: number;
 }
 
-export type iCreateMovie = Omit<iMovie, "id">;
+export type tCreateMovie = Omit<iMovie, "id">;

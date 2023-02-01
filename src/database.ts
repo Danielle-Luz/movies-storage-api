@@ -1,6 +1,6 @@
 import { Client, QueryResult } from "pg";
 import format from "pg-format";
-import { iMovie } from "./interfaces";
+import { iMovie, tCreateMovie } from "./interfaces";
 
 export namespace database {
   const connection = new Client({
@@ -29,19 +29,31 @@ export namespace database {
       searchedName
     );
 
-    try {
-      await openConnection();
+    await openConnection();
 
-      const resultQuery: QueryResult<iMovie> = await connection.query(
-        queryString
-      );
-      const movieFound: iMovie[] = resultQuery.rows;
+    const resultQuery: QueryResult<iMovie> = await connection.query(
+      queryString
+    );
 
-      await closeConnection();
+    const movieFound: iMovie[] = resultQuery.rows;
 
-      return movieFound;
-    } catch (error) {
-      console.error(error);
-    }
+    await closeConnection();
+
+    return movieFound;
+  };
+
+  export const createMovie = async (newMovie: tCreateMovie) => {
+    const movieKeys = Object.keys(newMovie);
+    const movieData = Object.values(newMovie);
+
+    const queryString = format(
+      "INSERT INTO movies(%I) VALUES(%L)",
+      movieKeys,
+      movieData
+    );
+
+    await openConnection();
+    await connection.query(queryString);
+    await closeConnection();
   };
 }

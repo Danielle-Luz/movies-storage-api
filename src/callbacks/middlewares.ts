@@ -24,10 +24,10 @@ export namespace middlewares {
       return movieKeys.includes(key);
     });
 
-    if (!hasAllMovieKeys) {
+    if (!hasAllMovieKeys || movieKeys.length !== requestMovieKeys.length) {
       const errorMessage: iMessage = {
         message:
-          "O corpo da requisição debe ter as seguintes propriedades: name, description, duration, price",
+          "O corpo da requisição deve ter as seguintes propriedades: name, description, duration, price",
       };
 
       return response.status(400).send(errorMessage);

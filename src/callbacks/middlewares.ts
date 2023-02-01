@@ -65,18 +65,22 @@ export namespace middlewares {
   ) => {
     const { body: requestMovieData } = request;
 
-    const foundMovie: iMovie[] | undefined = await database.getMovieByName(
-      requestMovieData.name
-    );
+    try {
+      const foundMovie: iMovie[] | undefined = await database.getMovieByName(
+        requestMovieData.name
+      );
 
-    if (foundMovie?.length !== 0) {
-      const errorMessage: iMessage = {
-        message: "Não é possível cadastrar mais de um filme com o mesmo nome",
-      };
+      if (foundMovie?.length !== 0) {
+        const errorMessage: iMessage = {
+          message: "Não é possível cadastrar mais de um filme com o mesmo nome",
+        };
 
-      return response.status(409).send(errorMessage);
+        return response.status(409).send(errorMessage);
+      }
+
+      next();
+    } catch (error) {
+      return response.status(500).send("Erro ao processar a solicitação");
     }
-
-    next();
   };
 }

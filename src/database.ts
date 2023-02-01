@@ -1,21 +1,48 @@
-import { Client } from "pg";
+import { throws } from "assert";
+import { Client, QueryResult } from "pg";
+import { format } from "node-pg-format";
+import { iMovie, tCreateMovie } from "./interfaces";
 
-const connection = new Client({
+export namespace database {
+  const connection = new Client({
     user: "postgres",
     password: "12345",
     host: "localhost",
     database: "postgres",
-    port: 5432
-});
+    port: 5432,
+  });
 
-export const openConnection = async () => {
+  export const openConnection = async () => {
     await connection.connect();
 
     console.log("Connection opened");
-}
+  };
 
-export const closeConnection = async () => {
-    await connection.end();
+  export const getMovieByName = async (searchedName: string) => {
+    const queryString = format(
+      "SELECT * FROM movies WHERE LOWER(name) = LOWER(%L)",
+      searchedName
+    );
 
-    console.log("Connection was closed");
+    const resultQuery: QueryResult<iMovie> = await connection.query(
+      queryString
+    );
+
+    const movieFound: iMovie[] = resultQuery.rows;
+
+    return movieFound;
+  };
+
+  export const createMovie = async (newMovie: tCreateMovie) => {
+    const movieKeys = Object.keys(newMovie);
+    const movieData = Object.values(newMovie);
+
+    const queryString = format(
+      "INSERT INTO movies(%I) VALUES(%L)",
+      movieKeys,
+      movieData
+    );
+    
+    await connection.query(queryString);
+  };
 }

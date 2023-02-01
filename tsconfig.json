@@ -10,6 +10,6 @@
       "exactOptionalPropertyTypes": true,
       "skipLibCheck": true
     },
-    "include": ["src/*"],
+    "include": ["src/*", "src/callbacks/requests.ts"],
     "exclude": ["node_modules"]
   }

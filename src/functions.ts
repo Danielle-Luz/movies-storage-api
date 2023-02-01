@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 
-export const createMovie = (request: Request, response: Response) => {
-  const { body } = request;
-};
+export namespace requests {
+  export const createMovie = (request: Request, response: Response) => {
+    const { body } = request;
+  };
+}

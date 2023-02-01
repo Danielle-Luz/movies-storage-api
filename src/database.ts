@@ -50,6 +50,6 @@ export namespace database {
       queryString
     );
 
-    return queryResult.rows;
+    return queryResult.rows[0];
   };
 }

@@ -38,11 +38,11 @@ export namespace requests {
     request: Request,
     response: Response
   ) => {
-    const perPage = request.convertedNumberParams?.perPage || 5;
-    const page = request.convertedNumberParams?.page || 1;
-    const order = (request.query["order"] as string) || "asc";
-    const sort = (request.query["sort"] as string) || "id";
-    const { moviesQuantity } = request;
+    const perPage = request.modifiedParams.perPage;
+    const page = request.modifiedParams.page;
+    const sort = request.modifiedParams.sort;
+    const order = request.modifiedParams.order;
+    const maxPages = request.maxPages;
 
     const moviesFound = await database.getMoviesWithFilters(
       perPage,
@@ -50,8 +50,7 @@ export namespace requests {
       order,
       sort
     );
-    
-    const maxPages = moviesQuantity / perPage;
+
     const previousPage =
       page > 1
         ? `http://localhost:3000/movies?page=${page - 1}&perPage=${perPage}`
@@ -67,7 +66,7 @@ export namespace requests {
       count: moviesFound.length,
       data: moviesFound,
     };
-    
+
     return response.status(200).send(pagination);
   };
 }

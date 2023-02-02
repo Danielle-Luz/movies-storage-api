@@ -95,88 +95,32 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const perPage = request.query["perPage"] || 5;
+    request.modifiedParams = { perPage: 0, page: 0, sort: "", order: ""};
+
+    const perPage = Number(request.query?.perPage);
+    const page = Number(request.query?.page);
+    const order = (request.query?.order as string)?.toUpperCase();
+    const sort = (request.query?.sort as string)?.toLowerCase();
+
+    const sortAllowedColumns = ["price", "duration"];
+    const orderDirectionsAvailable = ["ASC", "DESC"];
+
     const moviesQuantity = (await database.getMoviesQuantity()) as number;
-    request.moviesQuantity = moviesQuantity;
-    request.convertedNumberParams = {};
+    request.maxPages = moviesQuantity / perPage;
 
-    const paramsIdealValues: iParamCheckGroup = {
-      page: {
-        idealValues: [
-          ...Array(moviesQuantity / parseInt(perPage as string) || 1).keys(),
-        ].map((value) => value + 1),
-        paramValueType: "number",
-      },
-      perPage: {
-        idealValues: [...Array(5).keys()].map((value) => value + 1),
-        paramValueType: "number",
-      },
-      sort: {
-        idealValues: ["price", "duration"],
-      },
-      order: {
-        idealValues: ["asc", "desc"],
-        dependsOn: "sort",
-      },
-    };
-    const requestParamsNames = Object.keys(request.query);
-    const idealParamsNames = Object.keys(paramsIdealValues);
+    request.modifiedParams.page =
+      isNaN(page) || page < 1 || page > request.maxPages ? 1 : page;
+    request.modifiedParams.perPage =
+      isNaN(perPage) || perPage < 1 || perPage > 5 ? 5 : perPage;
+    request.modifiedParams.sort = !sortAllowedColumns.includes(sort)
+      ? "id"
+      : sort;
+    request.modifiedParams.order =
+      !sortAllowedColumns.includes(sort) ||
+      !orderDirectionsAvailable.includes(order)
+        ? "ASC"
+        : order;
 
-    const infoMessage: iMessage = { message: "" };
-
-    try {
-      const hasOnlyAllowedParams = requestParamsNames.every(
-        (paramName) =>
-          idealParamsNames.includes(paramName) &&
-          requestParamsNames.length <= idealParamsNames.length
-      );
-
-      if (!hasOnlyAllowedParams) {
-        infoMessage.message =
-          "Os parâmetros permitidos são: page, perPage, sort e order";
-
-        throw new Error();
-      }
-
-      requestParamsNames.forEach((paramName) => {
-        let paramValue = request.query[paramName] as never;
-
-        const rightType = paramsIdealValues[paramName].paramValueType;
-        if (rightType === "number") {
-          request.convertedNumberParams[paramName] = Number(
-            request.query[paramName]
-          );
-        }
-
-        paramValue = (
-          rightType === "number"
-            ? request.convertedNumberParams[paramName]
-            : paramValue
-        ) as never;
-        const hasSomeIdealValue =
-          paramsIdealValues[paramName].idealValues.includes(paramValue);
-        if (!hasSomeIdealValue) {
-          infoMessage.message = `O parâmetro ${paramName} deve ter um dos seguintes valores: ${paramsIdealValues[
-            paramName
-          ].idealValues.join(", ")}`;
-
-          throw new Error();
-        }
-
-        const dependecyParamName = paramsIdealValues[paramName]?.dependsOn;
-        if (
-          dependecyParamName &&
-          !requestParamsNames.includes(dependecyParamName)
-        ) {
-          infoMessage.message = `O parâmetro ${paramName} só pode ser usado se o seguinte parâmetro também estiver na URL: ${dependecyParamName}`;
-
-          throw new Error();
-        }
-      });
-
-      next();
-    } catch (error) {
-      response.status(400).send(infoMessage);
-    }
+    next();
   };
 }

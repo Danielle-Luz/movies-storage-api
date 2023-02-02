@@ -95,8 +95,6 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    let perPage: number = 0;
-    let pagesQuantity: number = 0;
     const paramsIdealValues: iParamCheckGroup = {
       page: {
         idealValues: [1],
@@ -119,18 +117,16 @@ export namespace middlewares {
     const requestParamsNames = Object.keys(request.query);
     const idealParamsNames = Object.keys(paramsIdealValues);
 
-    const hasOnlyAllowedParams = requestParamsNames.every(
-      (paramName) =>
-        idealParamsNames.includes(paramName) &&
-        requestParamsNames.length <= idealParamsNames.length
-    );
-
-    let status: number = 200;
     const infoMessage: iMessage = { message: "" };
-
+    
     try {
+      const hasOnlyAllowedParams = requestParamsNames.every(
+        (paramName) =>
+          idealParamsNames.includes(paramName) &&
+          requestParamsNames.length <= idealParamsNames.length
+      );
+
       if (!hasOnlyAllowedParams) {
-        status = 400;
         infoMessage.message =
           "Os parâmetros permitidos são: page, perPage, sort e order";
 
@@ -144,7 +140,6 @@ export namespace middlewares {
           paramsIdealValues[paramName].idealValues.includes(paramValue);
 
         if (!hasSomeIdealValue) {
-          status = 400;
           infoMessage.message = `O parâmetro ${paramName} deve ter um dos seguintes valores: ${paramsIdealValues[
             paramName
           ].idealValues.join(", ")}`;
@@ -155,8 +150,15 @@ export namespace middlewares {
         const rightType = paramsIdealValues[paramName].paramValueType;
 
         if (typeof paramValue !== rightType) {
-          status = 400;
           infoMessage.message = `O parâmetro ${paramName} deve ter ser do seguinte tipo: ${rightType}`;
+
+          throw new Error();
+        }
+
+        const dependecyParamName = paramsIdealValues[paramName]?.dependsOn;
+
+        if (dependecyParamName && !requestParamsNames.includes(dependecyParamName)) {
+          infoMessage.message = `O parâmetro ${paramName} só pode ser usado se o seguinte parâmetro também estiver na URL: ${dependecyParamName}`;
 
           throw new Error();
         }
@@ -164,7 +166,7 @@ export namespace middlewares {
 
       next();
     } catch (error) {
-      response.status(status).send(infoMessage);
+      response.status(400).send(infoMessage);
     }
   };
 }

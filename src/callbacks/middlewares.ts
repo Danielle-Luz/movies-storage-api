@@ -1,6 +1,6 @@
 import { database } from "./../database";
 import { iMessage, iMovie, tCreateMovie } from "./../interfaces";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, request, Request, Response } from "express";
 
 export namespace middlewares {
   const movie: tCreateMovie = {
@@ -80,6 +80,27 @@ export namespace middlewares {
     }
 
     return next();
+  };
+
+  export const checkUpdatedMovieId = (
+    Request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { updatedMovieId } = request.params;
+    const idAsNumber = Number(updatedMovieId);
+
+    if (isNaN(idAsNumber) || idAsNumber < 1 || idAsNumber % 1 !== 0) {
+      const errorMessage: iMessage = {
+        message: "O id do filme atualizado deve ser um número inteiro positivo",
+      };
+
+      return response.status(400).send(errorMessage);
+    }
+
+    request.updatedMovieId = idAsNumber;
+
+    next();
   };
 
   export const checkIfNameAlreadyExists = async (

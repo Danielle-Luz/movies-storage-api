@@ -23,6 +23,7 @@ declare global {
         [key: string]: number | string;
       };
       maxPages: number;
+      updatedMovieId: number;
     }
   }
 }

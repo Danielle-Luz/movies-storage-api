@@ -45,7 +45,7 @@ export namespace database {
       movieKeys,
       movieData
     );
-  
+
     const queryResult: QueryResult<iMovie> = await connection.query(
       queryString
     );
@@ -59,14 +59,36 @@ export namespace database {
     const allMovies: QueryResult<iMovie> = await connection.query(queryString);
 
     return allMovies.rows;
-  }
+  };
+
+  export const getMoviesWithFilters = async (
+    perPage: number,
+    page: number,
+    order: string,
+    sort: string
+  ) => {
+    const queryString = `
+    SELECT * FROM movies
+    ORDER BY $4 $3
+    LIMIT $1
+    OFFSET $2
+    `;
+    const offset = perPage * page - 1;
+    const moviesFound: QueryResult<iMovie> = await connection.query(
+      queryString,
+      [sort, order, perPage, offset]
+    );
+
+    return moviesFound.rows;
+  };
 
   export const getMoviesQuantity = async () => {
-    
     const queryString = "SELECT COUNT(*) FROM movies";
 
-    const moviesQuantity: QueryResult<iCount> = await connection.query(queryString);
+    const moviesQuantity: QueryResult<iCount> = await connection.query(
+      queryString
+    );
 
     return moviesQuantity.rows[0].count;
-  }
+  };
 }

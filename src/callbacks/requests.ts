@@ -36,5 +36,9 @@ export namespace requests {
   export const getMoviesByPage = async (request: Request, response: Response) => {
     const perPage = request.query["perPage"] || 5;
     const page = request.query["page"] || 1;
+    const order = request.query["order"] || "asc";
+    const sort = request.query["sort"] || "";
+
+    
   }
 }

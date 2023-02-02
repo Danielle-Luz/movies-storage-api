@@ -1,6 +1,12 @@
 import { database } from "./../database";
-import { iMessage, iMovie, tCreateMovie } from "./../interfaces";
+import {
+  iMessage,
+  iMovie,
+  iParamCheckGroup,
+  tCreateMovie,
+} from "./../interfaces";
 import { NextFunction, Request, Response } from "express";
+import { hasUncaughtExceptionCaptureCallback } from "process";
 
 export namespace middlewares {
   const movie: tCreateMovie = {
@@ -89,24 +95,64 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const paramsIdealValues = {
+    let perPage: number = 0;
+    let pagesQuantity: number = 0;
+    const paramsIdealValues: iParamCheckGroup = {
       page: {
         idealValues: [1],
-        
+        errorMessage: `O valor mínimo da página é 1, com ${perPage} por página, o valor máximo é ${pagesQuantity}`,
       },
       perPage: {
-        idealValues: [...Array(5).keys()].map(value => value + 1),
-        errorMessage: "Só podem haver no mínimo 1 e no máximo 5 itens por página"
+        idealValues: [...Array(5).keys()].map((value) => value + 1),
+        errorMessage:
+          "Só podem haver no mínimo 1 e no máximo 5 itens por página",
       },
       sort: {
         idealValues: ["price", "duration"],
-        errorMessage: "Os filmes só podem ser classificados pelos seguintes valores: price ou duration"
+        errorMessage:
+          "Os filmes só podem ser classificados pelos seguintes valores: price ou duration",
       },
       order: {
         idealValues: ["asc", "desc"],
-        errorMessage: "Os filmes só podem ser ordenados pelos seguintes valores: asc ou desc",
-        dependsOn: "sort"
+        errorMessage:
+          "Os filmes só podem ser ordenados pelos seguintes valores: asc ou desc",
+        dependsOn: "sort",
+      },
+    };
+    const requestParamsNames = Object.keys(request.query);
+    const idealParamsNames = Object.keys(paramsIdealValues);
+
+    const hasOnlyAllowedParams = requestParamsNames.every(
+      (paramName) =>
+        idealParamsNames.includes(paramName) &&
+        requestParamsNames.length <= idealParamsNames.length
+    );
+
+    let status: number = 200;
+    const infoMessage: iMessage = { message: "" };
+
+    try {
+      if (!hasOnlyAllowedParams) {
+        status = 400;
+        infoMessage.message = "Os parâmetros permitidos são: page, perPage, sort e order";
+
+        throw new Error()
       }
+      
+      requestParamsNames.forEach((paramName) => {
+        const paramValue = request.query[paramName] as never;
+
+        const hasSomeIdealValue = paramsIdealValues[paramName].idealValues.includes(paramValue);
+
+        if (!hasSomeIdealValue) {
+          status = 400;
+          infoMessage.message = `O parâmetro ${paramName} deve ter um dos seguintes valores: ${paramsIdealValues[paramName].idealValues.join(", ")}`;
+
+          throw new Error();
+        }
+      });
+    } catch (error) {
+      response.status(status).send(infoMessage);
     }
-  }
+  };
 }

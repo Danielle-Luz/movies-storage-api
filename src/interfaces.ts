@@ -11,8 +11,12 @@ export interface iMessage {
   message: string;
 }
 
-export interface iParamCheck {
-  idealValues: string[];
+export interface iParamCheckGroup {
+  [key: string]: iParamCheck;
+}
+
+interface iParamCheck {
+  idealValues: string[] | number[];
   errorMessage: string;
   dependsOn?: string;
 }

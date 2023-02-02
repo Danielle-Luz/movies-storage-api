@@ -60,4 +60,12 @@ export namespace database {
 
     return allMovies.rows;
   }
+
+  export const getMoviesQuantity = async () => {
+    const queryString = "SELECT COUNT(*) FROM movies";
+
+    const moviesQuantity: QueryResult<Number> = await connection.query(queryString);
+
+    return moviesQuantity.rows;
+  }
 }

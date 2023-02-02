@@ -100,23 +100,20 @@ export namespace middlewares {
     const paramsIdealValues: iParamCheckGroup = {
       page: {
         idealValues: [1],
-        errorMessage: `O valor mínimo da página é 1, com ${perPage} por página, o valor máximo é ${pagesQuantity}`,
+        paramValueType: "number",
       },
       perPage: {
         idealValues: [...Array(5).keys()].map((value) => value + 1),
-        errorMessage:
-          "Só podem haver no mínimo 1 e no máximo 5 itens por página",
+        paramValueType: "number",
       },
       sort: {
         idealValues: ["price", "duration"],
-        errorMessage:
-          "Os filmes só podem ser classificados pelos seguintes valores: price ou duration",
+        paramValueType: "string",
       },
       order: {
         idealValues: ["asc", "desc"],
-        errorMessage:
-          "Os filmes só podem ser ordenados pelos seguintes valores: asc ou desc",
         dependsOn: "sort",
+        paramValueType: "string",
       },
     };
     const requestParamsNames = Object.keys(request.query);
@@ -134,23 +131,38 @@ export namespace middlewares {
     try {
       if (!hasOnlyAllowedParams) {
         status = 400;
-        infoMessage.message = "Os parâmetros permitidos são: page, perPage, sort e order";
+        infoMessage.message =
+          "Os parâmetros permitidos são: page, perPage, sort e order";
 
-        throw new Error()
+        throw new Error();
       }
-      
+
       requestParamsNames.forEach((paramName) => {
         const paramValue = request.query[paramName] as never;
 
-        const hasSomeIdealValue = paramsIdealValues[paramName].idealValues.includes(paramValue);
+        const hasSomeIdealValue =
+          paramsIdealValues[paramName].idealValues.includes(paramValue);
 
         if (!hasSomeIdealValue) {
           status = 400;
-          infoMessage.message = `O parâmetro ${paramName} deve ter um dos seguintes valores: ${paramsIdealValues[paramName].idealValues.join(", ")}`;
+          infoMessage.message = `O parâmetro ${paramName} deve ter um dos seguintes valores: ${paramsIdealValues[
+            paramName
+          ].idealValues.join(", ")}`;
+
+          throw new Error();
+        }
+
+        const rightType = paramsIdealValues[paramName].paramValueType;
+
+        if (typeof paramValue !== rightType) {
+          status = 400;
+          infoMessage.message = `O parâmetro ${paramName} deve ter ser do seguinte tipo: ${rightType}`;
 
           throw new Error();
         }
       });
+
+      next();
     } catch (error) {
       response.status(status).send(infoMessage);
     }

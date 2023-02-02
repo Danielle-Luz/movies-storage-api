@@ -15,7 +15,7 @@ api.post(
   requests.createMovie
 );
 
-api.get("/movies", requests.getAllMovies);
+api.get("/movies", middlewares.checkQueryParams, requests.getMoviesByPage);
 
 api.listen(3000, async () => {
   await database.openConnection();

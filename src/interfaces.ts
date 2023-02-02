@@ -25,4 +25,10 @@ export interface iCount {
   count: number;
 }
 
+export interface iPagination {
+  previousPage: string;
+  nextPage: string;
+  data: iMovie[];
+}
+
 export type tCreateMovie = Omit<iMovie, "id">;

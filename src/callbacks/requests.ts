@@ -21,7 +21,7 @@ export namespace requests {
   export const getMovies = async (request: Request, response: Response) => {
     try {
       const allMovies = await database.getAllMovies();
-      
+
       return response.status(200).send(allMovies);
     } catch (error) {
       const errorMessage: iMessage = {
@@ -33,12 +33,22 @@ export namespace requests {
     }
   };
 
-  export const getMoviesByPage = async (request: Request, response: Response) => {
-    const perPage = request.query["perPage"] || 5;
-    const page = request.query["page"] || 1;
-    const order = request.query["order"] || "asc";
-    const sort = request.query["sort"] || "";
+  export const getMoviesByPage = async (
+    request: Request,
+    response: Response
+  ) => {
+    const perPage = request.convertedNumberParams?.perPage || 5;
+    const page = request.convertedNumberParams?.page || 1;
+    const order = (request.query["order"] as string) || "asc";
+    const sort = (request.query["sort"] as string) || "";
 
-    
-  }
+    const moviesFound = await database.getMoviesWithFilters(
+      perPage,
+      page,
+      order,
+      sort
+    );
+
+    return response.status(200).send(moviesFound);
+  };
 }

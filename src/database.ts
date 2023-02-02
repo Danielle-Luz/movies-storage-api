@@ -69,14 +69,13 @@ export namespace database {
   ) => {
     const queryString = `
     SELECT * FROM movies
-    ORDER BY $4 $3
-    LIMIT $1
-    OFFSET $2
+    ORDER BY %I %s
+    LIMIT %L
+    OFFSET %L
     `;
     const offset = perPage * page - 1;
     const moviesFound: QueryResult<iMovie> = await connection.query(
-      queryString,
-      [sort, order, perPage, offset]
+      format(queryString, sort , order, perPage, offset)
     );
 
     return moviesFound.rows;

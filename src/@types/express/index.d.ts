@@ -12,4 +12,14 @@ declare global {
         | number;
     }
   }
+
+  namespace Express {
+    interface Request {
+      convertedNumberParams: {
+        perPage: number;
+        page: number;
+        [key: string]: number;
+      }
+    }
+  }
 }

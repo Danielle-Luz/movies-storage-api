@@ -141,11 +141,9 @@ export namespace middlewares {
 
         const rightType = paramsIdealValues[paramName].paramValueType;
         if (rightType === "number") {
-          const query = request.query as QueryString.ParsedQs;
-
-          query[paramName] = Number(request.query[paramName]);
-
-          paramValue = query[paramName] as never;
+          request.convertedNumberParams[paramName] = Number(
+            request.query[paramName]
+          );
         }
 
         const hasSomeIdealValue =

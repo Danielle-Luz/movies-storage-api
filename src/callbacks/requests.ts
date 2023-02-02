@@ -18,7 +18,7 @@ export namespace requests {
     }
   };
 
-  export const getAllMovies = async (request: Request, response: Response) => {
+  export const getMovies = async (request: Request, response: Response) => {
     try {
       const allMovies = await database.getAllMovies();
       
@@ -32,4 +32,9 @@ export namespace requests {
       return response.status(500).send(errorMessage);
     }
   };
+
+  export const getMoviesByPage = async (request: Request, response: Response) => {
+    const perPage = request.query["perPage"] || 5;
+    const page = request.query["page"] || 1;
+  }
 }

@@ -18,7 +18,7 @@ export interface iParamCheckGroup {
 interface iParamCheck {
   idealValues: string[] | number[];
   dependsOn?: string;
-  paramValueType: "string" | "number";
+  paramValueType?: "number";
 }
 
 export type tCreateMovie = Omit<iMovie, "id">;

@@ -106,19 +106,17 @@ export namespace middlewares {
       },
       sort: {
         idealValues: ["price", "duration"],
-        paramValueType: "string",
       },
       order: {
         idealValues: ["asc", "desc"],
         dependsOn: "sort",
-        paramValueType: "string",
       },
     };
     const requestParamsNames = Object.keys(request.query);
     const idealParamsNames = Object.keys(paramsIdealValues);
 
     const infoMessage: iMessage = { message: "" };
-    
+
     try {
       const hasOnlyAllowedParams = requestParamsNames.every(
         (paramName) =>
@@ -134,11 +132,10 @@ export namespace middlewares {
       }
 
       requestParamsNames.forEach((paramName) => {
-        const paramValue = request.query[paramName] as never;
+        let paramValue = request.query[paramName] as never;
 
         const hasSomeIdealValue =
           paramsIdealValues[paramName].idealValues.includes(paramValue);
-
         if (!hasSomeIdealValue) {
           infoMessage.message = `O parâmetro ${paramName} deve ter um dos seguintes valores: ${paramsIdealValues[
             paramName
@@ -148,15 +145,15 @@ export namespace middlewares {
         }
 
         const rightType = paramsIdealValues[paramName].paramValueType;
+        if (rightType === "number") {
+          const query = request.query as QueryString.ParsedQs;
 
-        if (typeof paramValue !== rightType) {
-          infoMessage.message = `O parâmetro ${paramName} deve ter ser do seguinte tipo: ${rightType}`;
+          query[paramName] = Number(request.query[paramName]);
 
-          throw new Error();
+          paramValue = query[paramName] as never;
         }
 
         const dependecyParamName = paramsIdealValues[paramName]?.dependsOn;
-
         if (dependecyParamName && !requestParamsNames.includes(dependecyParamName)) {
           infoMessage.message = `O parâmetro ${paramName} só pode ser usado se o seguinte parâmetro também estiver na URL: ${dependecyParamName}`;
 

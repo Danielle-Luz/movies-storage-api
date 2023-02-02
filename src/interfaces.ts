@@ -11,4 +11,10 @@ export interface iMessage {
   message: string;
 }
 
+export interface iParamCheck {
+  idealValues: string[];
+  errorMessage: string;
+  dependsOn?: string;
+}
+
 export type tCreateMovie = Omit<iMovie, "id">;

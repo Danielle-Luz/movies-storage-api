@@ -134,6 +134,15 @@ export namespace middlewares {
       requestParamsNames.forEach((paramName) => {
         let paramValue = request.query[paramName] as never;
 
+        const rightType = paramsIdealValues[paramName].paramValueType;
+        if (rightType === "number") {
+          const query = request.query as QueryString.ParsedQs;
+
+          query[paramName] = Number(request.query[paramName]);
+
+          paramValue = query[paramName] as never;
+        }
+
         const hasSomeIdealValue =
           paramsIdealValues[paramName].idealValues.includes(paramValue);
         if (!hasSomeIdealValue) {
@@ -142,15 +151,6 @@ export namespace middlewares {
           ].idealValues.join(", ")}`;
 
           throw new Error();
-        }
-
-        const rightType = paramsIdealValues[paramName].paramValueType;
-        if (rightType === "number") {
-          const query = request.query as QueryString.ParsedQs;
-
-          query[paramName] = Number(request.query[paramName]);
-
-          paramValue = query[paramName] as never;
         }
 
         const dependecyParamName = paramsIdealValues[paramName]?.dependsOn;

@@ -33,3 +33,5 @@ export interface iPagination {
 }
 
 export type tCreateMovie = Omit<iMovie, "id">;
+
+export type tUpdateMovie = Partial<tCreateMovie>;

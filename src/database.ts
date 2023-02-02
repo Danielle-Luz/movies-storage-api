@@ -1,7 +1,7 @@
 import { throws } from "assert";
 import { Client, QueryResult } from "pg";
 import { format } from "node-pg-format";
-import { iCount, iMovie, tCreateMovie } from "./interfaces";
+import { iCount, iMovie, tCreateMovie, tUpdateMovie } from "./interfaces";
 
 export namespace database {
   const connection = new Client({
@@ -75,7 +75,7 @@ export namespace database {
     `;
     const offset = perPage * page - 1;
     const moviesFound: QueryResult<iMovie> = await connection.query(
-      format(queryString, sort , order, perPage, offset)
+      format(queryString, sort, order, perPage, offset)
     );
 
     return moviesFound.rows;
@@ -89,5 +89,25 @@ export namespace database {
     );
 
     return moviesQuantity.rows[0].count;
+  };
+
+  export const updateMovie = async (
+    updatedMovieData: Partial<tCreateMovie>,
+    updatedMovieId: number
+  ) => {
+    const updatedColumns = Object.keys(updatedMovieData);
+    const updatedValues = Object.values(updatedMovieData);
+
+    const queryString = `
+    UPDATE movies
+    SET(%I) = ROW(%L)
+    WHERE id = %L
+    `;
+
+    const queryResult: QueryResult<tUpdateMovie> = await connection.query(
+      format(queryString, updatedColumns, updatedValues, updatedMovieId)
+    );
+
+    return queryResult.rows[0];
   };
 }

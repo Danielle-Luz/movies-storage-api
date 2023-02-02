@@ -83,4 +83,30 @@ export namespace middlewares {
       return response.status(500).send("Erro ao processar a solicitação");
     }
   };
+
+  export const checkQueryParams = (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const paramsIdealValues = {
+      page: {
+        idealValues: [1],
+        
+      },
+      perPage: {
+        idealValues: [...Array(5).keys()].map(value => value + 1),
+        errorMessage: "Só podem haver no mínimo 1 e no máximo 5 itens por página"
+      },
+      sort: {
+        idealValues: ["price", "duration"],
+        errorMessage: "Os filmes só podem ser classificados pelos seguintes valores: price ou duration"
+      },
+      order: {
+        idealValues: ["asc", "desc"],
+        errorMessage: "Os filmes só podem ser ordenados pelos seguintes valores: asc ou desc",
+        dependsOn: "sort"
+      }
+    }
+  }
 }

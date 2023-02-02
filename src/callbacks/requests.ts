@@ -64,6 +64,7 @@ export namespace requests {
     const pagination: iPagination = {
       previousPage,
       nextPage,
+      count: moviesFound.length,
       data: moviesFound,
     };
     

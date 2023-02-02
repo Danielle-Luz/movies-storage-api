@@ -28,6 +28,7 @@ export interface iCount {
 export interface iPagination {
   previousPage: string | null;
   nextPage: string | null;
+  count: number;
   data: iMovie[];
 }
 

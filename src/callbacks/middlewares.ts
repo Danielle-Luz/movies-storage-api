@@ -1,12 +1,6 @@
 import { database } from "./../database";
-import {
-  iMessage,
-  iMovie,
-  iParamCheckGroup,
-  tCreateMovie,
-} from "./../interfaces";
+import { iMessage, iMovie, tCreateMovie } from "./../interfaces";
 import { NextFunction, Request, Response } from "express";
-import { hasUncaughtExceptionCaptureCallback } from "process";
 
 export namespace middlewares {
   const movie: tCreateMovie = {
@@ -40,6 +34,30 @@ export namespace middlewares {
     }
 
     return next();
+  };
+
+  export const checkUpdatedMovieKeys = (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { body: updatedMovieData } = request;
+    const updatedMovieKeys = Object.keys(updatedMovieData);
+
+    const hasValidKeys = updatedMovieKeys.every((key) =>
+      movieKeys.includes(key)
+    );
+
+    if (!hasValidKeys) {
+      const errorMessage: iMessage = {
+        message:
+          "O corpo da requisição só pode possuir as seguintes propriedades: name, description, duration, price",
+      };
+
+      response.status(400).send(errorMessage);
+    }
+
+    next();
   };
 
   export const checkMoviePropertiesTypes = (
@@ -95,7 +113,7 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    request.modifiedParams = { perPage: 0, page: 0, sort: "", order: ""};
+    request.modifiedParams = { perPage: 0, page: 0, sort: "", order: "" };
 
     const perPage = Number(request.query?.perPage);
     const page = Number(request.query?.page);

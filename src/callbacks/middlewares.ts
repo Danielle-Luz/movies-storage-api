@@ -90,14 +90,19 @@ export namespace middlewares {
     }
   };
 
-  export const checkQueryParams = (
+  export const checkQueryParams = async (
     request: Request,
     response: Response,
     next: NextFunction
   ) => {
+    const perPage = request.query["perPage"] || 5;
+    const moviesQuantity = (await database.getMoviesQuantity()) as number;
+
     const paramsIdealValues: iParamCheckGroup = {
       page: {
-        idealValues: [1],
+        idealValues: [
+          ...Array(moviesQuantity / parseInt(perPage as string) || 1).keys(),
+        ].map((value) => value + 1),
         paramValueType: "number",
       },
       perPage: {
@@ -154,7 +159,10 @@ export namespace middlewares {
         }
 
         const dependecyParamName = paramsIdealValues[paramName]?.dependsOn;
-        if (dependecyParamName && !requestParamsNames.includes(dependecyParamName)) {
+        if (
+          dependecyParamName &&
+          !requestParamsNames.includes(dependecyParamName)
+        ) {
           infoMessage.message = `O parâmetro ${paramName} só pode ser usado se o seguinte parâmetro também estiver na URL: ${dependecyParamName}`;
 
           throw new Error();

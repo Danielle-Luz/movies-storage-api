@@ -11,14 +11,18 @@ export interface iMessage {
   message: string;
 }
 
-export interface iParamCheckGroup {
-  [key: string]: iParamCheck;
-}
-
 interface iParamCheck {
   idealValues: string[] | number[];
   dependsOn?: string;
   paramValueType?: "number";
+}
+
+export interface iParamCheckGroup {
+  [key: string]: iParamCheck;
+}
+
+export interface iCount {
+  count: number;
 }
 
 export type tCreateMovie = Omit<iMovie, "id">;

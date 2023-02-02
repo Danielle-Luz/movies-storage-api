@@ -1,7 +1,7 @@
 import { throws } from "assert";
 import { Client, QueryResult } from "pg";
 import { format } from "node-pg-format";
-import { iMovie, tCreateMovie } from "./interfaces";
+import { iCount, iMovie, tCreateMovie } from "./interfaces";
 
 export namespace database {
   const connection = new Client({
@@ -62,10 +62,11 @@ export namespace database {
   }
 
   export const getMoviesQuantity = async () => {
+    
     const queryString = "SELECT COUNT(*) FROM movies";
 
-    const moviesQuantity: QueryResult<Number> = await connection.query(queryString);
+    const moviesQuantity: QueryResult<iCount> = await connection.query(queryString);
 
-    return moviesQuantity.rows;
+    return moviesQuantity.rows[0].count;
   }
 }

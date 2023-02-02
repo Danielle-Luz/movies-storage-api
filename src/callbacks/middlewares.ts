@@ -97,6 +97,8 @@ export namespace middlewares {
   ) => {
     const perPage = request.query["perPage"] || 5;
     const moviesQuantity = (await database.getMoviesQuantity()) as number;
+    request.moviesQuantity = moviesQuantity;
+    request.convertedNumberParams = {};
 
     const paramsIdealValues: iParamCheckGroup = {
       page: {
@@ -146,6 +148,11 @@ export namespace middlewares {
           );
         }
 
+        paramValue = (
+          rightType === "number"
+            ? request.convertedNumberParams[paramName]
+            : paramValue
+        ) as never;
         const hasSomeIdealValue =
           paramsIdealValues[paramName].idealValues.includes(paramValue);
         if (!hasSomeIdealValue) {

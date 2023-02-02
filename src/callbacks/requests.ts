@@ -1,3 +1,4 @@
+import { iPagination } from "./../interfaces";
 import { Request, response, Response } from "express";
 import { database } from "../database";
 import { iMessage } from "../interfaces";
@@ -40,7 +41,8 @@ export namespace requests {
     const perPage = request.convertedNumberParams?.perPage || 5;
     const page = request.convertedNumberParams?.page || 1;
     const order = (request.query["order"] as string) || "asc";
-    const sort = (request.query["sort"] as string) || "";
+    const sort = (request.query["sort"] as string) || "id";
+    const { moviesQuantity } = request;
 
     const moviesFound = await database.getMoviesWithFilters(
       perPage,
@@ -48,7 +50,23 @@ export namespace requests {
       order,
       sort
     );
+    
+    const maxPages = moviesQuantity / perPage;
+    const previousPage =
+      page > 1
+        ? `http://localhost:3000/movies?page=${page - 1}&perPage=${perPage}`
+        : null;
+    const nextPage =
+      page < maxPages
+        ? `http://localhost:3000/movies?page=${page + 1}&perPage=${perPage}`
+        : null;
 
-    return response.status(200).send(moviesFound);
+    const pagination: iPagination = {
+      previousPage,
+      nextPage,
+      data: moviesFound,
+    };
+    
+    return response.status(200).send(pagination);
   };
 }

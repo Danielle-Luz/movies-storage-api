@@ -16,10 +16,11 @@ declare global {
   namespace Express {
     interface Request {
       convertedNumberParams: {
-        perPage: number;
-        page: number;
+        perPage?: number;
+        page?: number;
         [key: string]: number;
-      }
+      },
+      moviesQuantity: number;
     }
   }
 }

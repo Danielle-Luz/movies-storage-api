@@ -129,6 +129,20 @@ export namespace middlewares {
     }
   };
 
+  export const checkUpdatedName = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const {body: updatedMovieData} = request;
+    
+    if (updatedMovieData?.name) {
+      await checkIfNameAlreadyExists(request, response, next);
+    } else {
+      next();
+    }
+  };
+
   export const checkQueryParams = async (
     request: Request,
     response: Response,

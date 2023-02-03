@@ -18,7 +18,9 @@ api.post(
 api.patch(
   "/movies",
   middlewares.checkUpdatedMovieId,
-  middlewares.checkUpdatedMovieKeys
+  middlewares.checkUpdatedMovieKeys,
+  middlewares.checkMoviePropertiesTypes,
+  requests.updateMovie
 );
 
 api.get("/movies", middlewares.checkQueryParams, requests.getMoviesByPage);

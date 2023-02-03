@@ -98,7 +98,7 @@ export namespace middlewares {
       return response.status(400).send(errorMessage);
     }
 
-    request.updatedMovieId = idAsNumber;
+    request.modifiedMovieId = idAsNumber;
 
     next();
   };
@@ -134,8 +134,8 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const {body: updatedMovieData} = request;
-    
+    const { body: updatedMovieData } = request;
+
     if (updatedMovieData?.name) {
       await checkIfNameAlreadyExists(request, response, next);
     } else {
@@ -173,6 +173,26 @@ export namespace middlewares {
       !orderDirectionsAvailable.includes(order)
         ? "ASC"
         : order;
+
+    next();
+  };
+
+  export const checkIfIdExists = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { modifiedMovieId } = request;
+
+    const movieExists = (await database.getMovieById(modifiedMovieId)) !== null;
+
+    if (!movieExists) {
+      const errorMessage: iMessage = {
+        message: "O filme com o id indicado não foi encontrado",
+      };
+
+      response.status(404).send(errorMessage);
+    }
 
     next();
   };

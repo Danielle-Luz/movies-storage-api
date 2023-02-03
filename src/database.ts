@@ -91,6 +91,16 @@ export namespace database {
     return moviesQuantity.rows[0].count;
   };
 
+  export const getMovieById = async (movieId: number) => {
+    const queryString = "SELECT * FROM movies WHERE id = %1";
+
+    const foundMovie = await connection.query(queryString, [movieId]);
+
+    console.log(foundMovie);
+
+    return foundMovie;
+  }
+
   export const updateMovie = async (
     updatedMovieData: Partial<tCreateMovie>,
     updatedMovieId: number

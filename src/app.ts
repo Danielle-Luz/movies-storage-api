@@ -19,7 +19,7 @@ api.patch(
   "/movies/:movieId",
   middlewares.checkMovieIdType,
   middlewares.checkIfIdExists,
-  middlewares.checkUpdatedMovieKeys,
+  middlewares.checkMovieKeys,
   middlewares.checkUpdatedName,
   middlewares.checkMoviePropertiesTypes,
   requests.updateMovie

@@ -112,6 +112,7 @@ export namespace database {
     UPDATE movies
     SET(%I) = ROW(%L)
     WHERE id = %L
+    RETURNING *
     `;
 
     const queryResult: QueryResult<tUpdateMovie> = await connection.query(

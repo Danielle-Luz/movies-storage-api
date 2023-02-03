@@ -163,8 +163,8 @@ export namespace middlewares {
     const orderDirectionsAvailable = ["ASC", "DESC"];
 
     const moviesQuantity = (await database.getMoviesQuantity()) as number;
-    request.maxPages = moviesQuantity / perPage;
-
+    request.maxPages = Math.ceil((moviesQuantity / perPage));
+    
     request.modifiedParams.page =
       isNaN(page) || page < 1 || page > request.maxPages ? 1 : page;
     request.modifiedParams.perPage =

@@ -82,13 +82,13 @@ export namespace middlewares {
     return next();
   };
 
-  export const checkUpdatedMovieId = (
+  export const checkMovieIdType = (
     request: Request,
     response: Response,
     next: NextFunction
   ) => {
-    const { updatedMovieId } = request.params;
-    const idAsNumber = Number(updatedMovieId);
+    const { movieId } = request.params;
+    const idAsNumber = Number(movieId);
 
     if (isNaN(idAsNumber) || idAsNumber < 1 || idAsNumber % 1 !== 0) {
       const errorMessage: iMessage = {
@@ -98,7 +98,7 @@ export namespace middlewares {
       return response.status(400).send(errorMessage);
     }
 
-    request.modifiedMovieId = idAsNumber;
+    request.movieId = idAsNumber;
 
     next();
   };
@@ -182,9 +182,9 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const { modifiedMovieId } = request;
+    const { movieId } = request;
 
-    const movieExists = (await database.getMovieById(modifiedMovieId)) !== null;
+    const movieExists = (await database.getMovieById(movieId)) !== null;
 
     if (!movieExists) {
       const errorMessage: iMessage = {

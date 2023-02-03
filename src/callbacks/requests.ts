@@ -20,12 +20,12 @@ export namespace requests {
   };
 
   export const updateMovie = async (request: Request, response: Response) => {
-    const { modifiedMovieId, body: updatedMovieData } = request;
+    const { movieId, body: updatedMovieData } = request;
 
     try {
       const updatedMovie = await database.updateMovie(
         updatedMovieData,
-        modifiedMovieId
+        movieId
       );
 
       return response.status(200).send(updatedMovie);

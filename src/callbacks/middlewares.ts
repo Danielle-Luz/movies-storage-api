@@ -54,7 +54,7 @@ export namespace middlewares {
           "O corpo da requisição só pode possuir as seguintes propriedades: name, description, duration, price",
       };
 
-      response.status(400).send(errorMessage);
+      return response.status(400).send(errorMessage);
     }
 
     next();
@@ -66,8 +66,12 @@ export namespace middlewares {
     next: NextFunction
   ) => {
     const { body: requestMovieData } = request;
+    let checkedKeys: string[];
 
-    const hasSameTypes = movieKeys.every((key) => {
+    if (request.method === "PATCH") checkedKeys = Object.keys(requestMovieData);
+    else checkedKeys = movieKeys;
+
+    const hasSameTypes = checkedKeys.every((key) => {
       return requestMovieData[key]?.constructor === movie[key].constructor;
     });
 
@@ -92,7 +96,7 @@ export namespace middlewares {
 
     if (isNaN(idAsNumber) || idAsNumber < 1 || idAsNumber % 1 !== 0) {
       const errorMessage: iMessage = {
-        message: "O id do filme atualizado deve ser um número inteiro positivo",
+        message: "O id do filme deve ser um número inteiro positivo",
       };
 
       return response.status(400).send(errorMessage);
@@ -184,7 +188,7 @@ export namespace middlewares {
   ) => {
     const { movieId } = request;
 
-    const movieExists = (await database.getMovieById(movieId)) !== null;
+    const movieExists = (await database.getMovieById(movieId));
 
     if (!movieExists) {
       const errorMessage: iMessage = {

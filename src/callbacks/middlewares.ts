@@ -16,48 +16,26 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
+    const errorMessage: iMessage = {
+      message:
+        request.method === "PATCH"
+          ? "O corpo da requisição só pode possuir uma ou mais das seguintes propriedades: name, description, duration e price"
+          : "O corpo da requisição deve ter as seguintes propriedades obrigatórias: name, duration e price, podendo ter a seguinte propriedade opcional: description",
+    };
+
     const { body: requestMovieData } = request;
 
     const requestMovieKeys = Object.keys(requestMovieData);
 
-    const hasAllMovieKeys = requestMovieKeys.every((key) => {
-      return movieKeys.includes(key);
-    });
+    const wrongKeys = requestMovieKeys.filter(
+      (key) => !movieKeys.includes(key)
+    );
 
-    if (!hasAllMovieKeys || movieKeys.length !== requestMovieKeys.length) {
-      const errorMessage: iMessage = {
-        message:
-          "O corpo da requisição deve ter as seguintes propriedades: name, description, duration, price",
-      };
-
+    if (wrongKeys.length !== 0) {
       return response.status(400).send(errorMessage);
     }
 
     return next();
-  };
-
-  export const checkUpdatedMovieKeys = (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
-    const { body: updatedMovieData } = request;
-    const updatedMovieKeys = Object.keys(updatedMovieData);
-
-    const hasValidKeys = updatedMovieKeys.every((key) =>
-      movieKeys.includes(key)
-    );
-
-    if (!hasValidKeys) {
-      const errorMessage: iMessage = {
-        message:
-          "O corpo da requisição só pode possuir as seguintes propriedades: name, description, duration, price",
-      };
-
-      return response.status(400).send(errorMessage);
-    }
-
-    next();
   };
 
   export const checkMoviePropertiesTypes = (
@@ -66,19 +44,24 @@ export namespace middlewares {
     next: NextFunction
   ) => {
     const { body: requestMovieData } = request;
-    let checkedKeys: string[];
 
-    if (request.method === "PATCH") checkedKeys = Object.keys(requestMovieData);
-    else checkedKeys = movieKeys;
+    const requestMovieDataKeys = Object.keys(requestMovieData);
 
-    const hasSameTypes = checkedKeys.every((key) => {
-      return requestMovieData[key]?.constructor === movie[key].constructor;
+    const rightMovieTypes: string[] = [];
+
+    const keysWithWrongTypes = requestMovieDataKeys.filter((key) => {
+      const rightMovieType = movie[key].constructor;
+
+      rightMovieTypes.push(rightMovieType.name.toLowerCase());
+
+      return requestMovieData[key]?.constructor !== rightMovieType;
     });
 
-    if (!hasSameTypes) {
+    if (keysWithWrongTypes.length !== 0) {
       const errorMessage: iMessage = {
-        message:
-          "As propriedades no corpo da requisição devem ter os seguintes tipos: string, string, number, number",
+        message: `As propriedades no corpo da requisição devem ter os seguintes tipos: ${rightMovieTypes.join(
+          ", "
+        )}`,
       };
       return response.status(400).send(errorMessage);
     }
@@ -163,8 +146,8 @@ export namespace middlewares {
     const orderDirectionsAvailable = ["ASC", "DESC"];
 
     const moviesQuantity = (await database.getMoviesQuantity()) as number;
-    request.maxPages = Math.ceil((moviesQuantity / perPage));
-    
+    request.maxPages = Math.ceil(moviesQuantity / perPage);
+
     request.modifiedParams.page =
       isNaN(page) || page < 1 || page > request.maxPages ? 1 : page;
     request.modifiedParams.perPage =
@@ -188,7 +171,7 @@ export namespace middlewares {
   ) => {
     const { movieId } = request;
 
-    const movieExists = (await database.getMovieById(movieId));
+    const movieExists = await database.getMovieById(movieId);
 
     if (!movieExists) {
       const errorMessage: iMessage = {

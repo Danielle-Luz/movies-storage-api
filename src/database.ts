@@ -53,14 +53,6 @@ export namespace database {
     return queryResult.rows[0];
   };
 
-  export const getAllMovies = async () => {
-    const queryString = "SELECT * FROM movies";
-
-    const allMovies: QueryResult<iMovie> = await connection.query(queryString);
-
-    return allMovies.rows;
-  };
-
   export const getMoviesWithFilters = async (
     perPage: number,
     page: number,
@@ -73,7 +65,8 @@ export namespace database {
     LIMIT %L
     OFFSET %L
     `;
-    const offset = perPage * page - 1;
+    const offset = perPage * page - perPage;
+    
     const moviesFound: QueryResult<iMovie> = await connection.query(
       format(queryString, sort, order, perPage, offset)
     );

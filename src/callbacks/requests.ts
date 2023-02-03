@@ -38,21 +38,6 @@ export namespace requests {
     }
   };
 
-  export const getMovies = async (request: Request, response: Response) => {
-    try {
-      const allMovies = await database.getAllMovies();
-
-      return response.status(200).send(allMovies);
-    } catch (error) {
-      const errorMessage: iMessage = {
-        message:
-          "Não foi possível recuperar os dados dos filmes na base de dados",
-      };
-
-      return response.status(500).send(errorMessage);
-    }
-  };
-
   export const getMoviesByPage = async (
     request: Request,
     response: Response

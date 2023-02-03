@@ -195,7 +195,7 @@ export namespace middlewares {
         message: "O filme com o id indicado não foi encontrado",
       };
 
-      response.status(404).send(errorMessage);
+      return response.status(404).send(errorMessage);
     }
 
     next();

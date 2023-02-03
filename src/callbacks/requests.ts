@@ -88,4 +88,20 @@ export namespace requests {
 
     return response.status(200).send(pagination);
   };
+
+  export const deleteMovie = async (request: Request, response: Response) => {
+    const { movieId } = request;
+
+    try {
+      await database.deleteMovie(movieId);
+
+      return response.status(204).send();
+    } catch (error) {
+      const errorMessage: iMessage = {
+        message: "Não foi possível excluir o filme",
+      };
+
+      return response.status(500).send(errorMessage);
+    }
+  };
 }

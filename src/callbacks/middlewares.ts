@@ -1,12 +1,6 @@
 import { database } from "./../database";
-import {
-  iMessage,
-  iMovie,
-  iParamCheckGroup,
-  tCreateMovie,
-} from "./../interfaces";
-import { NextFunction, Request, Response } from "express";
-import { hasUncaughtExceptionCaptureCallback } from "process";
+import { iMessage, iMovie, tCreateMovie } from "./../interfaces";
+import { NextFunction, request, Request, Response } from "express";
 
 export namespace middlewares {
   const movie: tCreateMovie = {
@@ -42,14 +36,42 @@ export namespace middlewares {
     return next();
   };
 
+  export const checkUpdatedMovieKeys = (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { body: updatedMovieData } = request;
+    const updatedMovieKeys = Object.keys(updatedMovieData);
+
+    const hasValidKeys = updatedMovieKeys.every((key) =>
+      movieKeys.includes(key)
+    );
+
+    if (!hasValidKeys) {
+      const errorMessage: iMessage = {
+        message:
+          "O corpo da requisição só pode possuir as seguintes propriedades: name, description, duration, price",
+      };
+
+      return response.status(400).send(errorMessage);
+    }
+
+    next();
+  };
+
   export const checkMoviePropertiesTypes = (
     request: Request,
     response: Response,
     next: NextFunction
   ) => {
     const { body: requestMovieData } = request;
+    let checkedKeys: string[];
 
-    const hasSameTypes = movieKeys.every((key) => {
+    if (request.method === "PATCH") checkedKeys = Object.keys(requestMovieData);
+    else checkedKeys = movieKeys;
+
+    const hasSameTypes = checkedKeys.every((key) => {
       return requestMovieData[key]?.constructor === movie[key].constructor;
     });
 
@@ -62,6 +84,27 @@ export namespace middlewares {
     }
 
     return next();
+  };
+
+  export const checkMovieIdType = (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { movieId } = request.params;
+    const idAsNumber = Number(movieId);
+
+    if (isNaN(idAsNumber) || idAsNumber < 1 || idAsNumber % 1 !== 0) {
+      const errorMessage: iMessage = {
+        message: "O id do filme deve ser um número inteiro positivo",
+      };
+
+      return response.status(400).send(errorMessage);
+    }
+
+    request.movieId = idAsNumber;
+
+    next();
   };
 
   export const checkIfNameAlreadyExists = async (
@@ -90,12 +133,26 @@ export namespace middlewares {
     }
   };
 
+  export const checkUpdatedName = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { body: updatedMovieData } = request;
+
+    if (updatedMovieData?.name) {
+      await checkIfNameAlreadyExists(request, response, next);
+    } else {
+      next();
+    }
+  };
+
   export const checkQueryParams = async (
     request: Request,
     response: Response,
     next: NextFunction
   ) => {
-    request.modifiedParams = { perPage: 0, page: 0, sort: "", order: ""};
+    request.modifiedParams = { perPage: 0, page: 0, sort: "", order: "" };
 
     const perPage = Number(request.query?.perPage);
     const page = Number(request.query?.page);
@@ -120,6 +177,26 @@ export namespace middlewares {
       !orderDirectionsAvailable.includes(order)
         ? "ASC"
         : order;
+
+    next();
+  };
+
+  export const checkIfIdExists = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const { movieId } = request;
+
+    const movieExists = (await database.getMovieById(movieId));
+
+    if (!movieExists) {
+      const errorMessage: iMessage = {
+        message: "O filme com o id indicado não foi encontrado",
+      };
+
+      return response.status(404).send(errorMessage);
+    }
 
     next();
   };

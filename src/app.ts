@@ -15,6 +15,16 @@ api.post(
   requests.createMovie
 );
 
+api.patch(
+  "/movies/:movieId",
+  middlewares.checkMovieIdType,
+  middlewares.checkIfIdExists,
+  middlewares.checkUpdatedMovieKeys,
+  middlewares.checkUpdatedName,
+  middlewares.checkMoviePropertiesTypes,
+  requests.updateMovie
+);
+
 api.get("/movies", middlewares.checkQueryParams, requests.getMoviesByPage);
 
 api.listen(3000, async () => {

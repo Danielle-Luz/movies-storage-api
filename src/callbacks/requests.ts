@@ -19,6 +19,25 @@ export namespace requests {
     }
   };
 
+  export const updateMovie = async (request: Request, response: Response) => {
+    const { movieId, body: updatedMovieData } = request;
+
+    try {
+      const updatedMovie = await database.updateMovie(
+        updatedMovieData,
+        movieId
+      );
+
+      return response.status(200).send(updatedMovie);
+    } catch {
+      const errorMessage: iMessage = {
+        message: "Não foi possível atualizar o filme.",
+      };
+
+      return response.status(500).send(errorMessage);
+    }
+  };
+
   export const getMovies = async (request: Request, response: Response) => {
     try {
       const allMovies = await database.getAllMovies();

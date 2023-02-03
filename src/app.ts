@@ -27,6 +27,13 @@ api.patch(
 
 api.get("/movies", middlewares.checkQueryParams, requests.getMoviesByPage);
 
+api.delete(
+  "/movies/:movieId",
+  middlewares.checkMovieIdType,
+  middlewares.checkIfIdExists,
+  requests.deleteMovie
+);
+
 api.listen(3000, async () => {
   await database.openConnection();
 

@@ -121,4 +121,10 @@ export namespace database {
 
     return queryResult.rows[0];
   };
+
+  export const deleteMovie = async (deletedMovieId: number) => {
+    const queryString = "DELETE FROM movies WHERE id = %L";
+
+    await connection.query(format(queryString, deletedMovieId));
+  };
 }

@@ -16,22 +16,38 @@ export namespace middlewares {
     response: Response,
     next: NextFunction
   ) => {
-    const errorMessage: iMessage = {
-      message:
-        request.method === "PATCH"
-          ? "O corpo da requisição só pode possuir uma ou mais das seguintes propriedades: name, description, duration e price"
-          : "O corpo da requisição deve ter as seguintes propriedades obrigatórias: name, duration e price, podendo ter a seguinte propriedade opcional: description",
-    };
-
     const { body: requestMovieData } = request;
 
     const requestMovieKeys = Object.keys(requestMovieData);
 
-    const wrongKeys = requestMovieKeys.filter(
-      (key) => !movieKeys.includes(key)
-    );
+    const errorMessage: iMessage = { message: "" };
 
-    if (wrongKeys.length !== 0) {
+    let hasInvalidKeys: boolean;
+
+    if (request.method === "PATCH") {
+      errorMessage.message =
+        "O corpo da requisição só pode possuir uma ou mais das seguintes propriedades: name, description, duration e price";
+
+      hasInvalidKeys =
+        requestMovieKeys.filter((key) => !movieKeys.includes(key)).length > 0;
+    } else {
+      const rightLength = requestMovieKeys.includes("description") ? 4 : 3;
+
+      const movieKeysWithoutDescription = movieKeys.filter(
+        (key) => key !== "description"
+      );
+
+      errorMessage.message =
+        "O corpo da requisição deve ter as seguintes propriedades obrigatórias: name, duration e price, podendo ter a seguinte propriedade opcional: description";
+
+      hasInvalidKeys =
+        !(requestMovieKeys.length === rightLength) &&
+        !movieKeysWithoutDescription.every((key) =>
+          requestMovieKeys.includes(key)
+        );
+    }
+
+    if (hasInvalidKeys) {
       return response.status(400).send(errorMessage);
     }
 

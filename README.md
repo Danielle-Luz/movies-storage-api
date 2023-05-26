@@ -5,7 +5,7 @@
     <img alt="Badge indicando que o status do projeto é 'concluído'" src="https://img.shields.io/badge/Status-Concluído-yellow">
 </p>
 
-## Sumário
+## Índice
 
 • <a href="#descricao">Descrição</a>
 <br>
@@ -60,7 +60,7 @@ API REST feita com express e typescript responsável por criar, listar, atualiza
 
 <h2 id="entradas-responses">Endpoints, entradas e responses</h2>
 
-### **POST: /movies**
+### **POST `/movies`**
 
 * Deve ser possível criar um filme contendo os seguintes dados:
   * **name**: string.
@@ -120,7 +120,7 @@ API REST feita com express e typescript responsável por criar, listar, atualiza
 }
 ```
 
-### **GET: /movies**
+### **GET `/movies`**
 
 * Deve ser possível listar todos os filmes armazenados no banco de dados.
 
@@ -183,7 +183,7 @@ API REST feita com express e typescript responsável por criar, listar, atualiza
 }
 ```
 
-### **PATCH: /movies/&lt;id&gt;**
+### **PATCH `/movies/<id>`**
 
 * Deve ser possível atualizar um filme pelo id recebido nos parâmetros da rota.
 
@@ -268,7 +268,7 @@ API REST feita com express e typescript responsável por criar, listar, atualiza
 }
 ```
 
-### **DELETE: /movies/&lt;id&gt;**
+### **DELETE `/movies/<id>`**
 
 ***Regras de negócio***
 

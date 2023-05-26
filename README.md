@@ -1,16 +1,45 @@
-# Endpoints do serviço
+<h1 align="center">Movies Storage API</h1>
 
-| Método | Endpoint | Responsabilidade |
-|--------|----------|------------------|
-| POST | /movies | Criar um novo filme |
-| GET | /movies | Listar todos os filmes |
-| PATCH | /movies/&lt;id&gt; | Atualiza os dados de um filme de forma dinâmica |
-| DELETE | /movies/&lt;id&gt; | Deleta um filme |
+<p align="center">
+    <img alt="Badge indicando que o projeto foi criado em fevereiro de 2023" src="https://img.shields.io/badge/Data%20de%20cria%C3%A7%C3%A3o-Fevereiro%2F2023-blue">
+    <img alt="Badge indicando que o status do projeto é 'concluído'" src="https://img.shields.io/badge/Status-Concluído-yellow">
+</p>
 
-## **Tabela**
+## Sumário
 
-A tabela deve seguir as seguintes especificações:
+• <a href="#descricao">Descrição</a>
+<br>
+• <a href="#tecnologias">Tecnologias</a>
+<br>
+• <a href="#bd">Banco de dados</a>
+<br>
+• <a href="#endpoints">Endpoints do serviço</a>
+<br>
+• <a href="#entradas-responses">Endpoints, entradas e responses</a>
+<br>
+• <a href="#Desenvolvedora">Desenvolvedora</a>
+<br>
+<p align="center">
+</p>
 
+
+<h2 id="descricao">Descrição</h2>
+API REST feita com express e typescript responsável por criar, listar, atualizar e deletar filmes em um banco de dados.
+
+<h2 id="tecnologias">Tecnologias</h2>
+
+- Typescript
+- Express
+- NodeJS
+- PostgreSQL
+
+<h2 id="bd">Banco de dados</h2>
+
+| SGBD | MER |
+|------|-----|
+| PostgreSQL | [Diagrama MER da base de dados](movies-mer.png) |
+
+### Especificações da tabela de filmes
 * **Nome da tabela**: movies.
 * **Colunas da tabela**:
   * **id**: inteiro, auto incrementável e chave primária.
@@ -19,12 +48,17 @@ A tabela deve seguir as seguintes especificações:
   * **duration**: inteiro e chave obrigatória.
   * **price**: inteiro e chave obrigatória.
 
-## Requisitos do Serviço
+<h2 id="endpoints">Endpoints do serviço</h2>
 
-Esse serviço precisa possuir uma API REST para que os demais serviços consigam criar, listar, atualizar e deletar filmes de um banco de dados.
+| Método | Endpoint | Responsabilidade |
+|--------|----------|------------------|
+| POST | /movies | Criar um novo filme |
+| GET | /movies | Listar todos os filmes |
+| PATCH | /movies/&lt;id&gt; | Atualiza os dados de um filme de forma dinâmica |
+| DELETE | /movies/&lt;id&gt; | Deleta um filme |
 
-* O banco de dados deve ser **PostgreSQL**.
-* O diagrama sobre a tabla de ver feito.
+
+<h2 id="entradas-responses">Endpoints, entradas e responses</h2>
 
 ### **POST: /movies**
 
@@ -257,3 +291,19 @@ Esse serviço precisa possuir uma API REST para que os demais serviços consigam
   "message": "Movie not found."
 }
 ```
+
+<h2 id="Desenvolvedora">Desenvolvedora</h2>
+
+<p align="center">
+  <a href="https://github.com/Danielle-Luz">
+    <img width="120px" src="https://avatars.githubusercontent.com/u/99164019?v=4" alt="foto de uma mulher parda com o cabelo castanho, sorrindo levemente na frente de um fundo verde com bits">
+  </a>
+</p>
+
+<p align="center">
+Danielle da Luz Nascimento
+</p>
+
+<p align="center">
+<a href="https://www.linkedin.com/in/danielle-da-luz-nascimento/">@Linkedin</a>
+</p>
